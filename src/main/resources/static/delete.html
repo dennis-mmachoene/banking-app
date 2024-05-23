@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Account</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .account-details {
+            margin-bottom: 20px;
+        }
+        p {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        .btn-back {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-back:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Delete Account</h1>
+    <div id="account-details" class="account-details"></div>
+    <button onclick="deleteAccount()" class="btn btn-delete">Delete</button>
+    <button onclick="goBack()" class="btn btn-back">Back</button>
+</div>
+
+<script>
+    const apiUrl = 'http://localhost:8080/api/accounts';
+    const urlParams = new URLSearchParams(window.location.search);
+    const accountId = urlParams.get('id');
+
+    async function fetchAccount() {
+        const response = await fetch(`${apiUrl}/${accountId}`);
+        const account = await response.json();
+        const accountDetails = document.getElementById('account-details');
+        accountDetails.innerHTML = `
+                <p>ID: ${account.id}</p>
+                <p>Name: ${account.name}</p>
+                <p>Balance: $${account.balance.toFixed(2)}</p>
+            `;
+    }
+
+    async function deleteAccount() {
+        const response = await fetch(`${apiUrl}/${accountId}`, {
+            method: 'DELETE'
+        });
+        if (response.ok) {
+            alert('Account deleted successfully!');
+            window.location.href = 'index.html';
+        }
+    }
+
+    function goBack() {
+        window.history.back();
+    }
+
+    fetchAccount();
+</script>
+</body>
+</html>

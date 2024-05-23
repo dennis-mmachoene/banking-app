@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .account-details {
+            margin-bottom: 20px;
+        }
+        p {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="number"],
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Withdraw</h1>
+    <div id="account-details" class="account-details"></div>
+    <div class="form-group">
+        <label for="withdrawAmount">Withdraw Amount:</label>
+        <input type="number" id="withdrawAmount" class="form-control">
+    </div>
+    <button onclick="withdraw()" class="btn btn-primary">Withdraw</button>
+    <button onclick="goBack()" class="btn btn-secondary">Back</button>
+</div>
+
+<script>
+    const apiUrl = 'http://localhost:8080/api/accounts';
+    const urlParams = new URLSearchParams(window.location.search);
+    const accountId = urlParams.get('id');
+
+    async function fetchAccount() {
+        const response = await fetch(`${apiUrl}/${accountId}`);
+        const account = await response.json();
+        const accountDetails = document.getElementById('account-details');
+        accountDetails.innerHTML = `
+                <p>ID: ${account.id}</p>
+                <p>Name: ${account.name}</p>
+                <p>Balance: $${account.balance.toFixed(2)}</p>
+            `;
+    }
+
+    async function withdraw() {
+        const amount = document.getElementById('withdrawAmount').value;
+        const response = await fetch(`${apiUrl}/${accountId}/withdraw`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ amount: parseFloat(amount) })
+        });
+        if (response.ok) {
+            alert('Withdrawal successful!');
+            window.location.href = 'index.html';
+        }
+    }
+
+    function goBack() {
+        window.history.back();
+    }
+
+    fetchAccount();
+</script>
+</body>
+</html>
