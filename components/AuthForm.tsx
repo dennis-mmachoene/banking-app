@@ -12,11 +12,13 @@ import { authFormSchema } from "@/lib/utils";
 import CustomInput from "./CustomInput";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { getLoggedInUser, signUp } from "@/lib/actions/user.actions";
 
 const AuthForm = ({ type }: { type: string }) => {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const loggedInUser = await getLoggedInUser();
 
   const formSchema = authFormSchema(type);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -33,6 +35,9 @@ const AuthForm = ({ type }: { type: string }) => {
     try {
       if (type === "sign-up") {
         
+        const newUser = await signUp(data);
+
+        setUser(newUser)
       }
     } catch (error) {
       console.log(error);
